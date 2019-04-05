@@ -56,10 +56,3 @@ RasPI statistics
 ESP8266 stuff
 +++++++++++++
 - basically anything that can feed into the influxDB.
-
-Indices and tables
-===================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
