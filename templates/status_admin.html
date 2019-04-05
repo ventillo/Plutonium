@@ -1,0 +1,94 @@
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col"></div>
+        <main class="pt-4 col-10">
+          <h1>Status Dashboard</h1>
+          <h5>{timestamp} UTC</h5>
+          <p>Up since: {uptime}</p>
+
+          <section class="row text-center placeholders">
+            <div class="col placeholder">
+              <img src="{sol_icon}" width="20" class="img-fluid" alt="ISS solar irradiation">
+              <h3>{sol_value}</h3>
+              <div class="text-muted">[V]</div>
+            </div>
+            <div class="col placeholder">
+              <img src="{cap_icon}" width="20" class="img-fluid" alt="ISS Capacitor state">
+              <h3>{cap_value}</h3>
+              <div class="text-muted">[V]</div>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="solcap_labels"></div>
+              <div id="solcap" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('solcap_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','solcap_monitor')">6h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','solcap_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','solcap_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','solcap_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','solcap_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','solcap_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','solcap_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('solcap_monitor')">&gt;&gt;</button>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="cpumem_labels"></div>
+              <div id="cpumem" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('cpumem_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('1','cpumem_monitor')">1h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','cpumem_monitor')">6h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','cpumem_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','cpumem_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','cpumem_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','cpumem_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','cpumem_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','cpumem_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('cpumem_monitor')">&gt;&gt;</button>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="network_labels"></div>
+              <div id="network" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('network_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('1','network_monitor')">1h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','network_monitor')">6h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','network_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','network_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','network_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','network_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','network_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','network_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('network_monitor')">&gt;&gt;</button>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="esp_battery_labels"></div>
+              <div id="esp_battery" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('esp_battery_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','esp_battery_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','esp_battery_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','esp_battery_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','esp_battery_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('esp_battery_monitor')">&gt;&gt;</button>
+            </div>
+            <script type="text/javascript" src="../static/js/status_graph.js"></script>
+          </section>
+        </main>
+        <div class="col"></div>
+      </div>
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10bugfix.js"></script>

@@ -1,0 +1,840 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>modules.dynamic &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction to Plutonium</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>modules.dynamic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for modules.dynamic</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">cherrypy.lib.httputil</span> <span class="k">import</span> <span class="n">parse_query_string</span>
+<span class="kn">import</span> <span class="nn">config</span>
+
+
+<span class="c1"># Universal variables</span>
+<span class="n">height_above_sea_level</span> <span class="o">=</span> <span class="mi">452</span>
+<span class="n">variables_known</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;range&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;granularity&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;start&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;end&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;type&quot;</span><span class="p">]</span>
+<span class="n">default_variables</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="s2">&quot;1h&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;granularity&quot;</span><span class="p">:</span> <span class="s2">&quot;30s&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="s2">&quot;1s&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">}</span>
+
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># Generic Functions</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="check_GET"><a class="viewcode-back" href="../../examples.html#modules.dynamic.check_GET">[docs]</a><span class="k">def</span> <span class="nf">check_GET</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Validates html query</span>
+
+<span class="sd">    Takes the key-val pairs and evaluates them against those variables, that</span>
+<span class="sd">    are defined as known to be safe to be parsed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        str(arguments):</span>
+<span class="sd">        &quot;A string of options to be directly evaluated as a dictionary&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list(str(variable)):</span>
+<span class="sd">        &quot;List of strings, occupied by variables validated to be safe&quot;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_q</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arguments</span><span class="p">))</span>
+    <span class="n">keys_to_process</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span><span class="n">_q</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_q</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">variables_known</span><span class="p">}</span>
+    <span class="n">resulting_variables</span> <span class="o">=</span> <span class="n">default_variables</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">resulting_variables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">keys_to_process</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resulting_variables</span></div>
+
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># Classes</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="k">class</span> <span class="nc">Helper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Helping calculations and functions</span>
+
+<span class="sd">        Some generic helpers, that do additional calculations, such as</span>
+<span class="sd">        percentages, predictions etc.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">pressure_to_std_atm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_pressure</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">hasl</span><span class="p">):</span>
+        <span class="n">a2ts</span> <span class="o">=</span> <span class="n">raw_pressure</span> \
+             <span class="o">+</span> <span class="p">((</span><span class="n">raw_pressure</span> <span class="o">*</span> <span class="mf">9.80665</span> <span class="o">*</span> <span class="n">hasl</span><span class="p">)</span>\
+             <span class="o">/</span> <span class="p">(</span><span class="mi">287</span> <span class="o">*</span> <span class="p">(</span><span class="mi">273</span> <span class="o">+</span> <span class="n">temperature</span> <span class="o">+</span> <span class="p">(</span><span class="n">hasl</span><span class="o">/</span><span class="mi">400</span><span class="p">))))</span>
+
+        <span class="c1">#a2ts = raw_pressure + hasl/10</span>
+        <span class="k">return</span> <span class="n">a2ts</span>
+
+    <span class="k">def</span> <span class="nf">percentageCalc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voltage</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Turns current charge for lead acid batteries into a human</span>
+<span class="sd">        readable %</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            float(voltage): Voltage in V</span>
+<span class="sd">            int(system): nominal system voltage, e.g. 12, 24, 48 etc</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float(percentage): Two decimal state of battery in percentage</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">system</span> <span class="ow">is</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">percentage</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mf">24.5724168782</span>\
+                       <span class="o">*</span> <span class="n">voltage</span> <span class="o">*</span> <span class="n">voltage</span> <span class="o">-</span> <span class="mf">521.9890329784</span> <span class="o">*</span> <span class="n">voltage</span>\
+                       <span class="o">+</span> <span class="mf">2771.1828105637</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">system</span> <span class="ow">is</span> <span class="mi">24</span><span class="p">:</span>
+            <span class="n">percentage</span> <span class="o">=</span> <span class="mf">2.4442</span> <span class="o">*</span> <span class="n">voltage</span> <span class="o">*</span> <span class="n">voltage</span>\
+                      <span class="o">-</span> <span class="mf">82.004</span> <span class="o">*</span> <span class="n">voltage</span> <span class="o">+</span> <span class="mf">602.91</span>
+        <span class="k">elif</span> <span class="n">system</span> <span class="ow">is</span> <span class="mi">48</span><span class="p">:</span>
+            <span class="c1"># percentage = round((voltage - 46.5) * 18.87, 2)</span>
+            <span class="n">percentage</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">voltage</span> <span class="o">-</span> <span class="mf">46.5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">23.26</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="mf">100.00</span> <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;</span> <span class="mf">100.00</span> <span class="k">else</span> <span class="n">percentage</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">percentage</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">percentage</span>
+        <span class="k">return</span> <span class="n">percentage</span>
+
+
+<span class="k">class</span> <span class="nc">DynamicEnergy</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Parse readings from victron MPPT via Ve.Direct stored in</span>
+<span class="sd">        InfluxDB</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">influx_voltage_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span> <span class="o">=</span> <span class="n">Helper</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">FreshValues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Get most up-to-date energy reading.</span>
+
+<span class="sd">            returns:</span>
+<span class="sd">                dict(): {&#39;state&#39;: str(),</span>
+<span class="sd">                         &#39;time&#39;: &#39;YYYY-mm-DDTHH:MM:SS.149636706Z&#39;,</span>
+<span class="sd">                         &#39;V_unit1&#39;: float(mV),</span>
+<span class="sd">                         &#39;Psol&#39;: fint(W),</span>
+<span class="sd">                         &#39;V_array&#39;: int(mV),</span>
+<span class="sd">                         &#39;ChCurr&#39;: int(mV)}</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">bat_query</span> <span class="o">=</span> <span class="s2">&quot;SELECT voltage FROM mppt WHERE type = &#39;bat&#39;&quot;</span> \
+                  <span class="o">+</span> <span class="s2">&quot;ORDER BY time DESC LIMIT 1&quot;</span>
+        <span class="n">voltage_battery</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">bat_query</span><span class="p">)</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT last(*) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM mppt &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; now() - 10m &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY type fill(0)&quot;</span>
+        <span class="n">state_query</span> <span class="o">=</span> <span class="s2">&quot;SELECT voltage,state FROM mppt &quot;</span>\
+                    <span class="o">+</span> <span class="s2">&quot;ORDER BY time DESC LIMIT 1&quot;</span>
+        <span class="n">state_db_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">state_query</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">state_db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">)</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="n">db_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">bat</span> <span class="o">=</span> <span class="n">db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">,</span>
+                                   <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bat&#39;</span><span class="p">})</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">,</span>
+                                   <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;day&#39;</span><span class="p">})</span>
+        <span class="n">prev_day</span> <span class="o">=</span> <span class="n">db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">,</span>
+                                   <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;prev_day&#39;</span><span class="p">})</span>                           
+        <span class="n">solar</span> <span class="o">=</span> <span class="n">db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">,</span>
+                                   <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;solar&#39;</span><span class="p">})</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">db_result</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;mppt&#39;</span><span class="p">,</span>
+                                   <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;total&#39;</span><span class="p">})</span>                           
+        <span class="n">bats</span> <span class="o">=</span> <span class="n">bat</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">solars</span> <span class="o">=</span> <span class="n">solar</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">days</span> <span class="o">=</span> <span class="n">day</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">prev_days</span> <span class="o">=</span> <span class="n">prev_day</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">totals</span> <span class="o">=</span> <span class="n">total</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">t_stamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">bats</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                       <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">t_stamp</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;ChCurr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bats</span><span class="p">[</span><span class="s1">&#39;last_current&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;V_array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bats</span><span class="p">[</span><span class="s1">&#39;last_voltage&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;perc_array&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">percentageCalc</span><span class="p">(</span>
+            <span class="n">bats</span><span class="p">[</span><span class="s1">&#39;last_voltage&#39;</span><span class="p">],</span>
+            <span class="mi">48</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Psol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solars</span><span class="p">[</span><span class="s1">&#39;last_power&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Vsol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solars</span><span class="p">[</span><span class="s1">&#39;last_voltage&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Wh_day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">days</span><span class="p">[</span><span class="s1">&#39;last_Wh&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pmax_prev_day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">days</span><span class="p">[</span><span class="s1">&#39;last_Pmax&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Wh_prev_day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_days</span><span class="p">[</span><span class="s1">&#39;last_Wh&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;Pmax_day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prev_days</span><span class="p">[</span><span class="s1">&#39;last_Pmax&#39;</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="s1">&#39;total_Wh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">totals</span><span class="p">[</span><span class="s1">&#39;last_Wh&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">stat_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Max power and daily generation.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># GET variables now set, ready to reference them</span>
+        <span class="n">_days</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;days&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">measures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(power)*24 as DayWh, max(Pmax) AS Pmax &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM mppt WHERE type=&#39;solar&#39; OR type=&#39;day&#39; &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &gt; &#39;</span><span class="si">{}</span><span class="s2"> 00:00:00&#39; - </span><span class="si">{}</span><span class="s2">d &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(1d) fill(previous)&quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time DESC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">_days</span><span class="p">)</span>
+        <span class="n">measure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">tm</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">P_max</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Wh_sol</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">measure</span><span class="p">[</span><span class="s1">&#39;mppt&#39;</span><span class="p">]:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tstamp</span> <span class="o">=</span> <span class="n">datapoint</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
+            <span class="n">Pmax</span> <span class="o">=</span> <span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;Pmax&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span>
+            <span class="n">DayWh</span> <span class="o">=</span> <span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;DayWh&quot;</span><span class="p">]</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">tstamp</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">Pmax</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">DayWh</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">solar_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get solar readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+
+<span class="sd">        yields: csv in raw, text format</span>
+<span class="sd">            time,V_solar,I_solar,P_solar,V_array</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">mppt_query_str</span> <span class="o">=</span> <span class="s2">&quot;SELECT min(power) AS Pmin, max(power) AS Pmax,&quot;</span> \
+                       <span class="o">+</span> <span class="s2">&quot;mean(power) AS Pavg &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;FROM mppt WHERE type=&#39;solar&#39; &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;AND time &gt; now() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;AND time &gt; now() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">) fill(previous)&quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">mppt_query</span> <span class="o">=</span> <span class="n">mppt_query_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                                           <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                                           <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(voltage) as Usol, &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;mean(power) as Psol, mean(power)/mean(voltage) as Isol &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;FROM mppt WHERE type=&#39;solar&#39; &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;AND time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">) fill(previous) ORDER BY time DESC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>                                   
+        <span class="n">bat_volt_query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(voltage) as Varr &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;FROM mppt WHERE type=&#39;bat&#39; &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;AND time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">) &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+                       <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">bat_volt_query</span> <span class="o">=</span> <span class="n">bat_volt_query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                                               <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                                               <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">bat_measures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">bat_volt_query</span><span class="p">)</span>
+        <span class="n">measures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">mppt_measures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">mppt_query</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,V_solar,I_solar,P_solar,V_array</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="n">volt_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">voltage</span> <span class="ow">in</span> <span class="n">bat_measures</span><span class="p">[</span><span class="s2">&quot;mppt&quot;</span><span class="p">]:</span>
+            <span class="n">volt_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">voltage</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]:</span> <span class="n">voltage</span><span class="p">[</span><span class="s2">&quot;Varr&quot;</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">measures</span><span class="p">[</span><span class="s2">&quot;mppt&quot;</span><span class="p">]:</span>
+            <span class="n">tm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">solar_voltage</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;Usol&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">solar_current</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;Isol&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">solar_power</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;Psol&quot;</span><span class="p">])</span>
+                <span class="n">solar_power</span> <span class="o">=</span> <span class="n">solar_power</span> <span class="o">-</span> <span class="mi">11</span> <span class="k">if</span> <span class="n">solar_power</span> <span class="o">&gt;</span> <span class="mi">11</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">solar_power</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">solar_power</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">solar_power</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datapoint</span><span class="p">[</span><span class="s2">&quot;Psol&quot;</span><span class="p">])</span>
+            <span class="n">array_voltage</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">volt_dict</span><span class="p">[</span><span class="n">tm</span><span class="p">])</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span> <span class="n">solar_voltage</span><span class="p">,</span>
+                                             <span class="n">solar_current</span><span class="p">,</span> <span class="n">solar_power</span><span class="p">,</span>
+                                             <span class="n">array_voltage</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Expose</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Default expose class. Takes other classes and exposes them</span>
+<span class="sd">        via html. GET checks should be defined here.</span>
+<span class="sd">        Function args and kwargs don&#39;t need to be checked, as they are internal</span>
+<span class="sd">        and not exposed.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="n">DynamicEnergy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weather</span> <span class="o">=</span> <span class="n">DynamicWeather</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">DynamicStatus</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iot</span> <span class="o">=</span> <span class="n">DynamicIoT</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span> <span class="o">=</span> <span class="n">Helper</span><span class="p">()</span>
+        
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Index, MOFO&quot;</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">solar_realtime_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">res_type</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">FreshValues</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">res_type</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">solar_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">sol_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="o">.</span><span class="n">solar_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sol_monitor</span>
+        
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">wind_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">wind_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weather</span><span class="o">.</span><span class="n">wind_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,Speed,Gusts,Direction</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">speed</span><span class="p">,</span> <span class="n">gust</span><span class="p">,</span> <span class="n">direction</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wind_monitor</span><span class="p">[</span><span class="s1">&#39;w_speeds&#39;</span><span class="p">],</span>
+                                          <span class="n">wind_monitor</span><span class="p">[</span><span class="s1">&#39;w_gusts&#39;</span><span class="p">],</span>
+                                          <span class="n">wind_monitor</span><span class="p">[</span><span class="s1">&#39;w_dirs&#39;</span><span class="p">]):</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">speed</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span>
+                                         <span class="n">speed</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+                                         <span class="n">gust</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+                                         <span class="n">direction</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>  
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">temphumi_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">temphumi_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weather</span><span class="o">.</span><span class="n">temphumi_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,T(ins),T(out),Humi(ins),Humi(out)</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">Thin</span><span class="p">,</span> <span class="n">Thout</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">temphumi_monitor</span><span class="p">[</span><span class="s1">&#39;th_ins&#39;</span><span class="p">],</span>
+                               <span class="n">temphumi_monitor</span><span class="p">[</span><span class="s1">&#39;th_outs&#39;</span><span class="p">]):</span>
+            <span class="n">tm_temp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Thin</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">temp_in_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Thin</span><span class="p">[</span><span class="s2">&quot;Temp&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">temp_out_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Thout</span><span class="p">[</span><span class="s2">&quot;Temp&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">hum_in_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Thin</span><span class="p">[</span><span class="s2">&quot;Hum&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">hum_out_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Thout</span><span class="p">[</span><span class="s2">&quot;Hum&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm_temp</span><span class="p">,</span>
+                                            <span class="n">temp_in_val</span><span class="p">,</span>
+                                            <span class="n">temp_out_val</span><span class="p">,</span>
+                                            <span class="n">hum_in_val</span><span class="p">,</span>
+                                            <span class="n">hum_out_val</span><span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">usense_temphumi_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">usense_temphumi_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iot</span><span class="o">.</span><span class="n">usense_temphumi_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,T(tea),Humi(tea)</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">temp_humi</span> <span class="ow">in</span> <span class="n">usense_temphumi_monitor</span><span class="p">[</span><span class="s1">&#39;temphumis&#39;</span><span class="p">]:</span>
+            <span class="n">tm_temp</span> <span class="o">=</span> <span class="n">temp_humi</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+            <span class="n">temp_tea_val</span> <span class="o">=</span> <span class="n">temp_humi</span><span class="p">[</span><span class="s2">&quot;temp&quot;</span><span class="p">]</span>
+            <span class="n">hum_tea_val</span> <span class="o">=</span> <span class="n">temp_humi</span><span class="p">[</span><span class="s2">&quot;hum&quot;</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm_temp</span><span class="p">,</span> <span class="n">temp_tea_val</span><span class="p">,</span> <span class="n">hum_tea_val</span><span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">pressure_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">pressure_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weather</span><span class="o">.</span><span class="n">pressure_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,Pressure</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">Press</span><span class="p">,</span> <span class="n">Tout</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pressure_monitor</span><span class="p">[</span><span class="s2">&quot;press_raws&quot;</span><span class="p">],</span>
+                             <span class="n">pressure_monitor</span><span class="p">[</span><span class="s2">&quot;Touts&quot;</span><span class="p">]):</span>
+            <span class="n">tm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Press</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">pressure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">pressure_to_std_atm</span><span class="p">(</span><span class="n">Press</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+                                                        <span class="n">Tout</span><span class="p">[</span><span class="s2">&quot;Tout&quot;</span><span class="p">],</span>
+                                                        <span class="n">height_above_sea_level</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span> <span class="n">pressure</span><span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">cpumem_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">cpumem_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">cpumem_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,Cpu,Mem,Disk</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">cpu</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">mem</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cpumem_monitor</span><span class="p">[</span><span class="s2">&quot;cpus&quot;</span><span class="p">],</span>
+                                  <span class="n">cpumem_monitor</span><span class="p">[</span><span class="s2">&quot;disks&quot;</span><span class="p">],</span>
+                                  <span class="n">cpumem_monitor</span><span class="p">[</span><span class="s2">&quot;mems&quot;</span><span class="p">]):</span>
+            <span class="n">tm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpu</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">cpu</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpu</span><span class="p">[</span><span class="s2">&quot;usage&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">mem</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">[</span><span class="s2">&quot;usage&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">disk</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">disk</span><span class="p">[</span><span class="s2">&quot;usage&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span> <span class="n">cpu</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">disk</span><span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">network_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">network_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">network_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,Bin,Bout,Din,Dout,Ein,Eout</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">traf</span> <span class="ow">in</span> <span class="n">network_monitor</span><span class="p">[</span><span class="s2">&quot;traffic&quot;</span><span class="p">]:</span>
+            <span class="n">tm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Bin</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_b_in&quot;</span><span class="p">]</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Bout</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_b_out&quot;</span><span class="p">]</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Din</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_drop_in&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Dout</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_drop_out&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Ein</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_e_in&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">Eout</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">traf</span><span class="p">[</span><span class="s2">&quot;traffic_e_out&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">tm</span><span class="p">,</span>
+                <span class="n">Bin</span><span class="p">,</span>
+                <span class="n">Bout</span><span class="p">,</span>
+                <span class="n">Din</span><span class="p">,</span>
+                <span class="n">Dout</span><span class="p">,</span>
+                <span class="n">Ein</span><span class="p">,</span>
+                <span class="n">Eout</span>
+            <span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">solcap_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">solcap_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">solcap_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,Solar,Capacitor</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">Sol</span><span class="p">,</span> <span class="n">Cap</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">solcap_monitor</span><span class="p">[</span><span class="s1">&#39;sols&#39;</span><span class="p">],</span>
+                            <span class="n">solcap_monitor</span><span class="p">[</span><span class="s1">&#39;caps&#39;</span><span class="p">]):</span>
+            <span class="n">tm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Sol</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">solar_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Sol</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">/</span> <span class="mi">100</span>
+            <span class="n">cap_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Cap</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm</span><span class="p">,</span> <span class="n">solar_value</span><span class="p">,</span> <span class="n">cap_value</span><span class="p">)</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">esp_battery_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">check_GET</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">place_tag</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">esp_bat_monitor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iot</span><span class="o">.</span><span class="n">esp_battery_graph_data</span><span class="p">(</span><span class="o">**</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;time,batt(</span><span class="si">{_place_tag}</span><span class="s2">),batt_perc(</span><span class="si">{_place_tag}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">_place_tag</span><span class="o">=</span><span class="n">place_tag</span>
+        <span class="p">)</span>
+        <span class="k">yield</span> <span class="n">header</span>
+        <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">esp_bat_monitor</span><span class="p">[</span><span class="s1">&#39;volts&#39;</span><span class="p">]:</span>
+            <span class="n">tm_batt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">batt</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">batt_val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">batt</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">1023</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">batt_val</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">batt_perc</span> <span class="o">=</span> <span class="mf">4.39</span>
+            <span class="k">yield</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tm_batt</span><span class="p">,</span> <span class="n">batt_val</span><span class="p">,</span> <span class="n">batt_perc</span><span class="p">)</span>
+                
+
+<span class="k">class</span> <span class="nc">DynamicStatus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_status_client</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">influx_status_client</span>
+        
+    <span class="k">def</span> <span class="nf">cpumem_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get RasPi value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(usage) AS usage &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM RasPI &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_status_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">cpu</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;RasPI&#39;</span><span class="p">,</span>
+                                        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;cpu&#39;</span><span class="p">})</span>
+        <span class="n">disk</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;RasPI&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;disk&#39;</span><span class="p">})</span>
+        <span class="n">mem</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;RasPI&#39;</span><span class="p">,</span>
+                                       <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;mem&#39;</span><span class="p">})</span>
+        <span class="n">cpus</span> <span class="o">=</span> <span class="p">[</span><span class="n">cpu_use</span> <span class="k">for</span> <span class="n">cpu_use</span> <span class="ow">in</span> <span class="n">cpu</span><span class="p">]</span>
+        <span class="n">disks</span> <span class="o">=</span> <span class="p">[</span><span class="n">disks_use</span> <span class="k">for</span> <span class="n">disks_use</span> <span class="ow">in</span> <span class="n">disk</span><span class="p">]</span>
+        <span class="n">mems</span> <span class="o">=</span> <span class="p">[</span><span class="n">mems_use</span> <span class="k">for</span> <span class="n">mems_use</span> <span class="ow">in</span> <span class="n">mem</span><span class="p">]</span>
+        <span class="c1"># Let&#39;s get the data from DB</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cpus&#39;</span><span class="p">:</span><span class="n">cpus</span><span class="p">,</span> <span class="s1">&#39;disks&#39;</span><span class="p">:</span><span class="n">disks</span><span class="p">,</span> <span class="s1">&#39;mems&#39;</span><span class="p">:</span><span class="n">mems</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">network_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get RasPi value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT derivative(max(*)) AS traffic &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM net &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_status_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">traffic</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;net&#39;</span><span class="p">,</span>
+                                        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">q</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]})</span>
+
+        <span class="n">traffics</span> <span class="o">=</span> <span class="p">[</span><span class="n">traf</span> <span class="k">for</span> <span class="n">traf</span> <span class="ow">in</span> <span class="n">traffic</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;traffic&#39;</span><span class="p">:</span> <span class="n">traffics</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">solcap_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get RasPi value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(voltage) as voltage &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM iss &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_status_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;iss&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;solar&#39;</span><span class="p">})</span>
+        <span class="n">cap</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;iss&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;capcaitor&#39;</span><span class="p">})</span>
+
+        <span class="n">sols</span> <span class="o">=</span> <span class="p">[</span><span class="n">solar</span> <span class="k">for</span> <span class="n">solar</span> <span class="ow">in</span> <span class="n">sol</span><span class="p">]</span>
+        <span class="n">caps</span> <span class="o">=</span> <span class="p">[</span><span class="n">capacitor</span> <span class="k">for</span> <span class="n">capacitor</span> <span class="ow">in</span> <span class="n">cap</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sols&#39;</span><span class="p">:</span> <span class="n">sols</span><span class="p">,</span> <span class="s1">&#39;caps&#39;</span><span class="p">:</span> <span class="n">caps</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+
+
+<div class="viewcode-block" id="DynamicIoT"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicIoT">[docs]</a><span class="k">class</span> <span class="nc">DynamicIoT</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; All IoT related methods. Currently, this goes to the weatherDB,</span>
+<span class="sd">    but is subject to change in the future. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_iot_client</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">influx_iot_client</span>
+
+<div class="viewcode-block" id="DynamicIoT.esp_battery_graph_data"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicIoT.esp_battery_graph_data">[docs]</a>    <span class="k">def</span> <span class="nf">esp_battery_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get RasPi value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(battery) as voltage &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM usense &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_iot_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">volt</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;usense&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">q</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]})</span>
+
+        <span class="n">volts</span> <span class="o">=</span> <span class="p">[</span><span class="n">bat_volt</span> <span class="k">for</span> <span class="n">bat_volt</span> <span class="ow">in</span> <span class="n">volt</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;volts&#39;</span><span class="p">:</span> <span class="n">volts</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="DynamicIoT.usense_temphumi_graph_data"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicIoT.usense_temphumi_graph_data">[docs]</a>    <span class="k">def</span> <span class="nf">usense_temphumi_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get RasPi value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(temperature) as temp, &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;mean(humidity) as hum &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM usense &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_iot_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">temphumi</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;usense&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">q</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]})</span>
+
+        <span class="n">temphumis</span> <span class="o">=</span> <span class="p">[</span><span class="n">temp_humi</span> <span class="k">for</span> <span class="n">temp_humi</span> <span class="ow">in</span> <span class="n">temphumi</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;temphumis&#39;</span><span class="p">:</span> <span class="n">temphumis</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span></div></div>
+
+
+<div class="viewcode-block" id="DynamicWeather"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicWeather">[docs]</a><span class="k">class</span> <span class="nc">DynamicWeather</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Weather reports, taken dynamically from InfluxDB.</span>
+<span class="sd">    All measurements tailored to suit the Davis Vantage Vue weather</span>
+<span class="sd">    station&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_weather_client</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">influx_weather_client</span>
+        
+<div class="viewcode-block" id="DynamicWeather.wind_graph_data"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicWeather.wind_graph_data">[docs]</a>    <span class="k">def</span> <span class="nf">wind_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Function to get wind value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+
+<span class="sd">        yields: csv in raw, text format</span>
+<span class="sd">            time, Speed, Gusts, Direction</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(value) AS value FROM wind &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_weather_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">w_speed</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;wind&#39;</span><span class="p">,</span>
+                                        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;speed&#39;</span><span class="p">})</span>
+        <span class="n">w_dir</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;wind&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;direction&#39;</span><span class="p">})</span>
+        <span class="n">w_gust</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;wind&#39;</span><span class="p">,</span>
+                                       <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;windgust&#39;</span><span class="p">})</span>
+        <span class="n">w_speeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">speed</span> <span class="k">for</span> <span class="n">speed</span> <span class="ow">in</span> <span class="n">w_speed</span><span class="p">]</span>
+        <span class="n">w_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">direction</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">w_dir</span><span class="p">]</span>
+        <span class="n">w_gusts</span> <span class="o">=</span> <span class="p">[</span><span class="n">gust</span> <span class="k">for</span> <span class="n">gust</span> <span class="ow">in</span> <span class="n">w_gust</span><span class="p">]</span>
+        <span class="c1"># Let&#39;s get the data from DB</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;w_speeds&#39;</span><span class="p">:</span><span class="n">w_speeds</span><span class="p">,</span> <span class="s1">&#39;w_dirs&#39;</span><span class="p">:</span><span class="n">w_dirs</span><span class="p">,</span> <span class="s1">&#39;w_gusts&#39;</span><span class="p">:</span><span class="n">w_gusts</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="DynamicWeather.temphumi_graph_data"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicWeather.temphumi_graph_data">[docs]</a>    <span class="k">def</span> <span class="nf">temphumi_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Function to get ttmper and humidity value readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+
+<span class="sd">        yields: csv in raw, text format</span>
+<span class="sd">            time, Speed, Gusts, Direction</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(humidity) AS Hum, &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;mean(temperature) AS Temp &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM temphumi &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_weather_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">th_in</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;temphumi&#39;</span><span class="p">,</span>
+                                        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;internal&#39;</span><span class="p">})</span>
+        <span class="n">th_out</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;temphumi&#39;</span><span class="p">,</span>
+                                      <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;external&#39;</span><span class="p">})</span>
+
+        <span class="n">th_ints</span> <span class="o">=</span> <span class="p">[</span><span class="n">temphumi_in</span> <span class="k">for</span> <span class="n">temphumi_in</span> <span class="ow">in</span> <span class="n">th_in</span><span class="p">]</span>
+        <span class="n">th_outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">temphumi_out</span> <span class="k">for</span> <span class="n">temphumi_out</span> <span class="ow">in</span> <span class="n">th_out</span><span class="p">]</span>
+        <span class="c1"># Let&#39;s get the data from DB</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;th_ins&#39;</span><span class="p">:</span><span class="n">th_ints</span><span class="p">,</span> <span class="s1">&#39;th_outs&#39;</span><span class="p">:</span><span class="n">th_outs</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span> </div>
+
+<div class="viewcode-block" id="DynamicWeather.pressure_graph_data"><a class="viewcode-back" href="../../examples.html#modules.dynamic.DynamicWeather.pressure_graph_data">[docs]</a>    <span class="k">def</span> <span class="nf">pressure_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">q</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Function to get pressure readings from InfluxDB.</span>
+<span class="sd">        These parsed into a CSV</span>
+
+<span class="sd">        yields: csv in raw, text format</span>
+<span class="sd">            time, Pressure</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT mean(pressure) AS pressure, &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;mean(temperature) as Tout &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FROM temphumi &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;WHERE type = &#39;raw&#39; OR type=&#39;external&#39; &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &gt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;AND time &lt; NOW() - </span><span class="si">{}</span><span class="s2"> &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;GROUP BY time(</span><span class="si">{}</span><span class="s2">), type &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;FILL(previous) &quot;</span>\
+              <span class="o">+</span> <span class="s2">&quot;ORDER BY time ASC&quot;</span>
+              
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">],</span>
+                             <span class="n">q</span><span class="p">[</span><span class="s1">&#39;granularity&#39;</span><span class="p">])</span>
+        <span class="n">db_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">influx_weather_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">press_raws</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;temphumi&#39;</span><span class="p">,</span>
+                                          <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;raw&#39;</span><span class="p">})</span>
+        <span class="n">Touts</span> <span class="o">=</span> <span class="n">db_results</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;temphumi&#39;</span><span class="p">,</span>
+                                          <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;external&#39;</span><span class="p">})</span>                                  
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;press_raws&#39;</span><span class="p">:</span> <span class="n">press_raws</span><span class="p">,</span> <span class="s1">&#39;Touts&#39;</span><span class="p">:</span> <span class="n">Touts</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">result</span> </div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dynamic data &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Plutonium</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Dynamic data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <hr class="docutils" />
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="module-modules.dynamic">
+<span id="dynamic-data"></span><h1>Dynamic data<a class="headerlink" href="#module-modules.dynamic" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="modules.dynamic.DynamicIoT">
+<em class="property">class </em><code class="descclassname">modules.dynamic.</code><code class="descname">DynamicIoT</code><a class="reference internal" href="_modules/modules/dynamic.html#DynamicIoT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicIoT" title="Permalink to this definition">¶</a></dt>
+<dd><p>All IoT related methods. Currently, this goes to the weatherDB,
+but is subject to change in the future.</p>
+<dl class="method">
+<dt id="modules.dynamic.DynamicIoT.esp_battery_graph_data">
+<code class="descname">esp_battery_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicIoT.esp_battery_graph_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicIoT.esp_battery_graph_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get RasPi value readings from InfluxDB.
+These parsed into a CSV</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="modules.dynamic.DynamicIoT.usense_temphumi_graph_data">
+<code class="descname">usense_temphumi_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicIoT.usense_temphumi_graph_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicIoT.usense_temphumi_graph_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get RasPi value readings from InfluxDB.
+These parsed into a CSV</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="modules.dynamic.DynamicWeather">
+<em class="property">class </em><code class="descclassname">modules.dynamic.</code><code class="descname">DynamicWeather</code><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicWeather" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weather reports, taken dynamically from InfluxDB.
+All measurements tailored to suit the Davis Vantage Vue weather
+station</p>
+<dl class="method">
+<dt id="modules.dynamic.DynamicWeather.pressure_graph_data">
+<code class="descname">pressure_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.pressure_graph_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicWeather.pressure_graph_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get pressure readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Pressure</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modules.dynamic.DynamicWeather.temphumi_graph_data">
+<code class="descname">temphumi_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.temphumi_graph_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicWeather.temphumi_graph_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get ttmper and humidity value readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Speed, Gusts, Direction</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="modules.dynamic.DynamicWeather.wind_graph_data">
+<code class="descname">wind_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.wind_graph_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.DynamicWeather.wind_graph_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to get wind value readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Speed, Gusts, Direction</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="modules.dynamic.check_GET">
+<code class="descclassname">modules.dynamic.</code><code class="descname">check_GET</code><span class="sig-paren">(</span><em>arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#check_GET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#modules.dynamic.check_GET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates html query</p>
+<p>Takes the key-val pairs and evaluates them against those variables, that
+are defined as known to be safe to be parsed.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>str(arguments):
+“A string of options to be directly evaluated as a dictionary”</dd>
+<dt>Returns:</dt>
+<dd>list(str(variable)):
+“List of strings, occupied by variables validated to be safe”</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="dynamic-weather">
+<h1>Dynamic Weather<a class="headerlink" href="#dynamic-weather" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">modules.dynamic.</code><code class="descname">DynamicWeather</code><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Weather reports, taken dynamically from InfluxDB.
+All measurements tailored to suit the Davis Vantage Vue weather
+station</p>
+<dl class="method">
+<dt>
+<code class="descname">pressure_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.pressure_graph_data"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Function to get pressure readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Pressure</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">temphumi_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.temphumi_graph_data"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Function to get ttmper and humidity value readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Speed, Gusts, Direction</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">wind_graph_data</code><span class="sig-paren">(</span><em>**q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/modules/dynamic.html#DynamicWeather.wind_graph_data"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Function to get wind value readings from InfluxDB.
+These parsed into a CSV</p>
+<dl class="docutils">
+<dt>yields: csv in raw, text format</dt>
+<dd>time, Speed, Gusts, Direction</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

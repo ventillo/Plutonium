@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to Plutonium &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="DOC: Plutonium reporter" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to Plutonium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cherrypy-configuration-config-py">CherryPy configuration (config.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cherrypy-configuration-file-plutonium-ini">CherryPy configuration file (plutonium.ini)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-config">Configuration classes and functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cherrypy-server-chttpd-py">CherryPy server (chttpd.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules-and-web-paths">Modules and web paths</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#index-index-py">Index (index.py)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction to Plutonium</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction-to-plutonium">
+<h1>Introduction to Plutonium<a class="headerlink" href="#introduction-to-plutonium" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="directory-structure">
+<h2>Directory structure<a class="headerlink" href="#directory-structure" title="Permalink to this headline">¶</a></h2>
+<p>Following structure is applied to this project. Some directories are
+minified in this view on purpose.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── chttpd.py
+├── config
+│   └── plutonium.ini
+├── config.py
+├── doc ... (documentation in sphinx)
+├── index.py
+├── localdeploy.sh
+├── modules
+│   ├── dynamic.py
+│   ├── status.py
+│   ├── temphumi.py
+│   ├── voltage.py
+│   └── weather.py
+├── static
+│   ├── css
+│   │   ├── bootstrap.css
+│   │   └── dygraph.css ...
+│   ├── img
+│   │   ├── battery_0.png ...
+│   └── js
+│       ├── solar_graph.js
+│       ├── status_graph.js
+│       ├── temphum_graph.js
+│       └── weather_graph.js ...
+├── templates
+│   ├── footer.html
+│   ├── header.html
+│   ├── landing_page.html
+│   ├── status_admin.html
+│   ├── temphumi_admin.html
+│   ├── top_menu.html
+│   ├── voltage_admin.html
+│   └── weather_admin.html
+└── TODO.txt
+</pre></div>
+</div>
+</div>
+<div class="section" id="cherrypy-configuration-config-py">
+<h2>CherryPy configuration (config.py)<a class="headerlink" href="#cherrypy-configuration-config-py" title="Permalink to this headline">¶</a></h2>
+<p>Configuration is stored in a separate file statically, so each submodule can
+load the same configuration. This should be variables, that are project-wide.</p>
+<div class="section" id="cherrypy-configuration-file-plutonium-ini">
+<h3>CherryPy configuration file (plutonium.ini)<a class="headerlink" href="#cherrypy-configuration-file-plutonium-ini" title="Permalink to this headline">¶</a></h3>
+<p>Configuration file, .ini style. Option = value. File resides in ./config
+directory. It is read by confi.py and parsed into a dict(), available
+throughout the project.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_server_protocol</span> <span class="o">=</span> <span class="n">https</span>
+<span class="n">_server_name</span> <span class="o">=</span> <span class="n">bastart</span><span class="o">.</span><span class="n">spoton</span><span class="o">.</span><span class="n">cz</span>
+<span class="n">_server_port</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">_server_bind_ip</span> <span class="o">=</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
+<span class="n">_influx_host</span> <span class="o">=</span> <span class="n">localhost</span>
+<span class="n">_influx_port</span> <span class="o">=</span> <span class="mi">8086</span>
+<span class="n">_influx_user</span> <span class="o">=</span> <span class="n">pi</span>
+<span class="n">_influx_pwd</span> <span class="o">=</span> <span class="n">password</span>
+<span class="n">_influx_weather_db</span> <span class="o">=</span> <span class="n">weather_v2</span>
+<span class="n">_influx_status_db</span> <span class="o">=</span> <span class="n">status</span>
+<span class="n">_influx_voltage_db</span> <span class="o">=</span> <span class="n">voltage</span>
+<span class="n">_influx_IoT_db</span> <span class="o">=</span> <span class="n">weather_v2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-config">
+<span id="configuration-classes-and-functions"></span><h3>Configuration classes and functions<a class="headerlink" href="#module-config" title="Permalink to this headline">¶</a></h3>
+<p>Generic, system-wide variables and functions to be used in any / every module
+Global variables are defined with _variable_name schema, to be quickly
+identified in the project.</p>
+<dl class="function">
+<dt id="config.read_html">
+<code class="descclassname">config.</code><code class="descname">read_html</code><span class="sig-paren">(</span><em>filename</em>, <em>_STATIC_DIR</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#read_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.read_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a html file</p>
+<p>Reads a file from a selected static directory - needs to be set as static
+in the cherrypy (chttpd.py).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">filename</span></code> <em>str()</em>, plain filename, without any path specification,
+without extension 
+<code class="docutils literal notranslate"><span class="pre">_STATIC_DIR</span></code> <em>str()</em>, path relative to the project root,
+where chttpd.py resides</dd>
+<dt>Returns:</dt>
+<dd><em>str()</em>, parsed html code from the read file, or a HTML
+formatted error if file cannot be read for any reason</dd>
+<dt>Exceptions:</dt>
+<dd>On file read fail, string with Exception text is returned</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="config.serverConfiguration">
+<em class="property">class </em><code class="descclassname">config.</code><code class="descname">serverConfiguration</code><a class="reference internal" href="_modules/config.html#serverConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.serverConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up Conf with appropriate values</p>
+<p>Creates an object that holds the configuration to the whole web server,
+is available throughout the project. This separates the .ini style config
+and the config.py script, that uses additional logic.</p>
+<dl class="method">
+<dt id="config.serverConfiguration.influx_connectors">
+<code class="descname">influx_connectors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#serverConfiguration.influx_connectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.serverConfiguration.influx_connectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up client objects for InfluxDB</p>
+<p>All DB connector objects in one place. Callable from other modules</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Sets:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">self.influx_weather_client</span></code>,
+<code class="docutils literal notranslate"><span class="pre">self.influx_voltage_client</span></code>,
+<code class="docutils literal notranslate"><span class="pre">self.influx_iot_client</span></code>,
+<code class="docutils literal notranslate"><span class="pre">self.influx_status_client</span></code>: Influx client connector objects</dd>
+<dt>Returns:</dt>
+<dd>N/A</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="config.serverConfiguration.read_config">
+<code class="descname">read_config</code><span class="sig-paren">(</span><em>conf_filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/config.html#serverConfiguration.read_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#config.serverConfiguration.read_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads configuration file</p>
+<p>Read and parse the configuration options into a dictionary
+Why not using configparser? No idea, subject to change.
+This method is called on class init.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">conf_filename</span></code>, <em>str()</em> file name without the .ini extension,
+residing in ./config directory</dd>
+<dt>Returns:</dt>
+<dd><p class="first"><em>dict()</em>, On success</p>
+<p class="last"><em>bool(False)</em>, On failure</p>
+</dd>
+<dt>Sets:</dt>
+<dd><code class="docutils literal notranslate"><span class="pre">self.dict()</span></code> of name_value_pairs read from the config file</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="cherrypy-server-chttpd-py">
+<h2>CherryPy server (chttpd.py)<a class="headerlink" href="#cherrypy-server-chttpd-py" title="Permalink to this headline">¶</a></h2>
+<p>The server uses CherryPy module. For more information, please consult the
+Cherrypy documentation.</p>
+<p>CHTTPD.py is also the executable, that can be launched as a standalone
+application by simply typing ./chttpd.py, or python3 chttpd.py</p>
+<span class="target" id="module-chttpd"></span><dl class="function">
+<dt id="chttpd.main_server_loop">
+<code class="descclassname">chttpd.</code><code class="descname">main_server_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/chttpd.html#main_server_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#chttpd.main_server_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master http server - the main executable / daemon</p>
+<p>Contains basic server settings and how the sub-modules
+are called and mounted to their respective paths</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><em>None</em></dd>
+<dt>Sets:</dt>
+<dd><em>server_config:</em>    dict(), updates cherrypy.config
+<em>conf:</em>             dict(), see Cherrypy docs for more
+<em>cherrypy.config:</em>  dict(), see Cherrypy docs for more</dd>
+<dt>Returns:</dt>
+<dd><em>N/A</em></dd>
+<dt>Raises:</dt>
+<dd><em>Exception</em>         If server is unable to start</dd>
+</dl>
+</dd></dl>
+
+<div class="section" id="modules-and-web-paths">
+<h3>Modules and web paths<a class="headerlink" href="#modules-and-web-paths" title="Permalink to this headline">¶</a></h3>
+<p>Modules are located in the <cite>modules</cite> directory, hence the imports from a
+subdirectory</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">voltage</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">weather</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">dynamic</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">temphumi</span>
+</pre></div>
+</div>
+<p>As can be seen, each class / module is mounted under a specific web path. This
+is the preferred way of future expansion modules.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">voltage</span><span class="o">.</span><span class="n">EnergyInfo</span><span class="p">(),</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">voltage</span><span class="o">.</span><span class="n">EnergyInfo</span><span class="p">(),</span> <span class="s2">&quot;/energy&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">weather</span><span class="o">.</span><span class="n">WeatherInfo</span><span class="p">(),</span> <span class="s2">&quot;/weather&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">StatusInfo</span><span class="p">(),</span> <span class="s2">&quot;/status&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">dynamic</span><span class="o">.</span><span class="n">Expose</span><span class="p">(),</span> <span class="s2">&quot;/data&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">temphumi</span><span class="o">.</span><span class="n">PuerhInfo</span><span class="p">(),</span> <span class="s2">&quot;/temphumi&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="index-index-py">
+<h2>Index (index.py)<a class="headerlink" href="#index-index-py" title="Permalink to this headline">¶</a></h2>
+<p>Reserved for future use. Currently not displayed, as the EnergyInfo() class is
+mounted under root(/) of the web, defined in chttpd.py</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">voltage</span><span class="o">.</span><span class="n">EnergyInfo</span><span class="p">(),</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="module-index"></span><dl class="class">
+<dt id="index.landingPage">
+<em class="property">class </em><code class="descclassname">index.</code><code class="descname">landingPage</code><a class="reference internal" href="_modules/index.html#landingPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#index.landingPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base Index constructor and expose function</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="DOC: Plutonium reporter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

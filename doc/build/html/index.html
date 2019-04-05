@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DOC: Plutonium reporter &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction to Plutonium" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Plutonium</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>DOC: Plutonium reporter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="doc-plutonium-reporter">
+<h1>DOC: Plutonium reporter<a class="headerlink" href="#doc-plutonium-reporter" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction to Plutonium</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#directory-structure">Directory structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#cherrypy-configuration-config-py">CherryPy configuration (config.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="introduction.html#cherrypy-configuration-file-plutonium-ini">CherryPy configuration file (plutonium.ini)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="introduction.html#module-config">Configuration classes and functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#cherrypy-server-chttpd-py">CherryPy server (chttpd.py)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="introduction.html#modules-and-web-paths">Modules and web paths</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#index-index-py">Index (index.py)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>This document covers the <strong>software part</strong> of the reporter, although it consists
+of a multitude of hw technologies, please keep that in mind.</p>
+</div>
+<div class="section" id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Permalink to this headline">¶</a></h2>
+<p>Delivering aggregated and comprehensive representation of data-value pairs
+in such a way, that even a complete idiot can read them. <em>This project is
+created by AND for me.</em></p>
+<p>In short, this application spins up a web server and on its address plots and
+displays values gathered from various sources.</p>
+<p>An example granted: <a class="reference external" href="https://bastart.spoton.cz">https://bastart.spoton.cz</a></p>
+<div class="section" id="sources">
+<h3>Sources<a class="headerlink" href="#sources" title="Permalink to this headline">¶</a></h3>
+<p>The sources for feeding the <strong>Plutonium</strong> include:</p>
+<ul class="simple">
+<li>Davis Vantage vue weather station (with a couple HW mods)</li>
+<li>Victron MPPT solar converter (Utilizing the Victron Direct RS232 protocol)</li>
+<li>CPU, MEM, DISK, (W)LAN statistics, plotted</li>
+<li><dl class="first docutils">
+<dt>Custom ESP8266 data loggers</dt>
+<dd><ul class="first last">
+<li>Temp / Humidity + battery logging</li>
+<li>Current monitoring for LED lighting</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="discrepancies-and-hardware-dependencies">
+<h3>Discrepancies and hardware dependencies<a class="headerlink" href="#discrepancies-and-hardware-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Obviously, all the monitoring cannot be done without proper HW equipment.
+Although this server is primarily aimed at use on a Raspberry PI, it can be
+installed on an old notebook, or similar, as the platform is Python3 and thus
+independent of the OS.</p>
+<div class="section" id="solar-mppt">
+<h4>Solar / MPPT<a class="headerlink" href="#solar-mppt" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Victron MPPT solar charge controller (Bluesolar)</li>
+<li>RS232 -&gt; USB or similar, to get the data to RasPi</li>
+</ul>
+</div>
+<div class="section" id="davis-vantage-vue">
+<h4>Davis Vantage Vue<a class="headerlink" href="#davis-vantage-vue" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Obviously the Davis Vantage Vue weather station</li>
+<li>The CC1101 / wireless version</li>
+<li>arduino mini / Uno &#64; 3.3V</li>
+<li>CC1101 receiver with a couple other components</li>
+</ul>
+</div>
+<div class="section" id="raspi-statistics">
+<h4>RasPI statistics<a class="headerlink" href="#raspi-statistics" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Just the RasPI</li>
+</ul>
+</div>
+<div class="section" id="esp8266-stuff">
+<h4>ESP8266 stuff<a class="headerlink" href="#esp8266-stuff" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>basically anything that can feed into the influxDB.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction to Plutonium" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

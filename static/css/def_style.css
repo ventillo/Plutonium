@@ -1,0 +1,75 @@
+/*BODY{font-family:monospace; background-color: #fafafa; padding: 0px; margin:0px;}*/
+div.textbox{
+    width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    padding: 3em;
+    border: 1px solid #ccc;
+    border-top: 1px solid #ddd;
+    border-bottom: 2px solid #000;
+    border-right: 2px solid #000;
+    background-color: #fff;
+    }
+/*H1{font-size: 2em;}
+H2{font-size: 1em; color: #666;}
+h3{font-size: 0.8em; coloe: #eee;}
+TABLE{border:1px solid grey;}
+TD{padding: 2px;}
+TH{background-color: #eee;}*/
+IMG#profile{
+    float: left;
+    margin-right: 2em;
+    margin-bottom: 4em;
+    margin-top:4em;
+}
+#header{
+    border-bottom: 2px solid #000;
+    margin-bottom: 4em;
+    padding: 8em;
+    padding-top: 2em;
+    padding-bottom: 1em;
+    background-color: #fff;
+}
+#footer{
+    font-size: 0.5em;
+    color: #777;
+    margin: 0px;
+    margin-top: 4em;
+    padding: 10em;
+    padding-top: 2em;
+    padding-bottom: 4em;
+    border-top: 1px solid #ddd;
+    background-color: #fefefe;
+}
+#menu{
+    float: right;
+}
+.menuitem{
+    float: left;
+    font-size: 1.5em;
+    color: #000;
+}
+.menuitem_current{
+    float: left;
+    font-size: 1.5em;
+    color: #000;
+    font-weight: bold;
+}
+.menuitem a{
+    color: #666;
+    text-decoration: none;
+}
+.menuitem a:hover{
+    color: #600;
+}
+.cleaner{
+    clear: both;
+    display: inline;
+    height: 0px;
+}
+#logo{
+
+}
+.left{float: left;}
+.right{float: right;}

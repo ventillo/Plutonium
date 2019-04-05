@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>chttpd &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Plutonium</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>chttpd</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for chttpd</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">cherrypy</span>
+
+<span class="kn">import</span> <span class="nn">index</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">voltage</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">weather</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">dynamic</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">modules</span> <span class="k">import</span> <span class="n">temphumi</span>
+<span class="kn">import</span> <span class="nn">config</span>
+
+
+<div class="viewcode-block" id="main_server_loop"><a class="viewcode-back" href="../introduction.html#chttpd.main_server_loop">[docs]</a><span class="k">def</span> <span class="nf">main_server_loop</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39; Master http server - the main executable / daemon</span>
+<span class="sd">    </span>
+<span class="sd">    Contains basic server settings and how the sub-modules</span>
+<span class="sd">    are called and mounted to their respective paths</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *None*</span>
+
+<span class="sd">    Sets:</span>
+<span class="sd">        *server_config:*    dict(), updates cherrypy.config</span>
+<span class="sd">        *conf:*             dict(), see Cherrypy docs for more</span>
+<span class="sd">        *cherrypy.config:*  dict(), see Cherrypy docs for more</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        *N/A*</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        *Exception*         If server is unable to start</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">server_config</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;server.socket_host&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_bind_ip&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;server.socket_port&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">Conf</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_port&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">server_config</span><span class="p">)</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;/&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;tools.sessions.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;tools.staticdir.root&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">SCRIPT_PATH</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;/static&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;tools.staticdir.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s1">&#39;./static&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">voltage</span><span class="o">.</span><span class="n">EnergyInfo</span><span class="p">(),</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">voltage</span><span class="o">.</span><span class="n">EnergyInfo</span><span class="p">(),</span> <span class="s2">&quot;/energy&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">weather</span><span class="o">.</span><span class="n">WeatherInfo</span><span class="p">(),</span> <span class="s2">&quot;/weather&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">StatusInfo</span><span class="p">(),</span> <span class="s2">&quot;/status&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">dynamic</span><span class="o">.</span><span class="n">Expose</span><span class="p">(),</span> <span class="s2">&quot;/data&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">temphumi</span><span class="o">.</span><span class="n">PuerhInfo</span><span class="p">(),</span> <span class="s2">&quot;/temphumi&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">block</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">main_server_loop</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">e</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

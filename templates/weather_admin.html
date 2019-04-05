@@ -1,0 +1,108 @@
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col"></div>
+        <main class="pt-4 col-10">
+          <h1>Weather Dashboard</h1>
+          <h5>{timestamp} UTC</h5>
+
+          <section class="row text-center placeholders">
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{w_speed_icon}" width="50" class="img-fluid" alt="Wind Speed">
+              <h4>{w_speed_km} [km/h]</h4>
+              <div class="text-muted">{w_speed_ms} [m/s]</div>
+            </div>
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{w_gust_icon}" width="50" class="img-fluid" alt="Wind Gusts">
+              <h4>{w_gust_km} [km/h]</h4>
+              <div class="text-muted">{w_gust_ms} [m/s]</div>
+            </div>
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{w_dir_icon}" width="50" class="img-fluid" alt="Wind Direction">
+              <h4>{w_dir_name}</h4>
+              <div class="text-muted">{w_dir_deg} &deg;</div>
+            </div>
+            </section>
+            <section class="row text-center placeholders">
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{out_temp_icon}" width="50" class="img-fluid" alt="Outside Temperature">
+              <h4>{out_temp} &deg;C</h4>
+              <div class="text-muted">[Outside]</div>
+            </div>
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{in_temp_icon}" width="50" class="img-fluid" alt="Inside Temperature">
+              <h4>{in_temp} &deg;C</h4>
+              <div class="text-muted">[Inside]</div>
+            </div>
+            <div class="col-md-4 placeholder col-sm-6">
+              <img src="{pressure_icon}" width="50" class="img-fluid" alt="Atmospheric pressure">
+              <h4>{pressure} [hPa]</h4>
+              <div class="text-muted">{raw_pressure} [hPa] raw</div>
+            </div>
+          </section>
+
+          <section class="row text-center">
+            <div class="col">
+              <h2>Wind speed and direction</h2>
+              <div id="wind_labels"></div>
+              <div id="wind" class="container-fluid" style="width:100%;height:200px;"></div>
+              <div class="row"><div class="col py-5">
+                <button type="button" class="btn btn-secondary" onclick="setBack('wind_monitor')">&lt;&lt;</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','wind_monitor')">6h</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','wind_monitor')">12h</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','wind_monitor')">24h</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','wind_monitor')">Week</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','wind_monitor')">Month</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','wind_monitor')">6Mo</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','wind_monitor')">Year</button>
+                <button type="button" class="btn btn-secondary" onclick="setForth('wind_monitor')">&gt;&gt;</button>
+              </div></div>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <h2>Temperature and Humidity</h2>
+              <div id="temphumi_labels"></div><div id="temphumi_labels_in"></div>
+              <div id="temphumi" class="container-fluid" style="width:100%;height:200px;"></div>
+              <div id="temphumi_in" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('temphumi_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','temphumi_monitor')">6h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','temphumi_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','temphumi_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','temphumi_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','temphumi_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','temphumi_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','temphumi_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('temphumi_monitor')">&gt;&gt;</button>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="pressure_labels"></div>
+              <div id="pressure" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('pressure_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','pressure_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','pressure_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','pressure_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','pressure_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','pressure_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','pressure_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('pressure_monitor')">&gt;&gt;</button>
+            </div>
+            <script type="text/javascript" src="../static/js/weather_graph.js"></script>
+          </section>
+
+        </main>
+        <div class="col" id="xxx"></div>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10bugfix.js"></script>

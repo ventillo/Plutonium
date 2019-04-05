@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>config &mdash; Plutonium reporter 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plutonium reporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction to Plutonium</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plutonium reporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for config</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Generic, system-wide variables and functions to be used in any / every module</span>
+<span class="sd">Global variables are defined with _variable_name schema, to be quickly</span>
+<span class="sd">identified in the project. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">influxdb</span>
+<span class="n">SCRIPT_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">_templates</span> <span class="o">=</span> <span class="s1">&#39;/templates/&#39;</span>
+
+
+<span class="c1"># Functions</span>
+<div class="viewcode-block" id="read_html"><a class="viewcode-back" href="../introduction.html#config.read_html">[docs]</a><span class="k">def</span> <span class="nf">read_html</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">_STATIC_DIR</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Read a html file</span>
+
+<span class="sd">    Reads a file from a selected static directory - needs to be set as static</span>
+<span class="sd">    in the cherrypy (chttpd.py).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ``filename`` *str()*, plain filename, without any path specification,</span>
+<span class="sd">        without extension </span>
+<span class="sd">        ``_STATIC_DIR`` *str()*, path relative to the project root,</span>
+<span class="sd">        where chttpd.py resides</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        *str()*, parsed html code from the read file, or a HTML</span>
+<span class="sd">        formatted error if file cannot be read for any reason</span>
+
+<span class="sd">    Exceptions:</span>
+<span class="sd">        On file read fail, string with Exception text is returned</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">read_path</span> <span class="o">=</span> <span class="n">SCRIPT_PATH</span> <span class="o">+</span> <span class="n">_STATIC_DIR</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.html&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">read_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;&lt;div&gt;ERROR: </span><span class="si">{}</span><span class="s2">!&lt;/div&gt;&lt;br&gt;</span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">read_path</span><span class="p">)</span></div>
+
+
+<span class="c1">#Classes</span>
+<div class="viewcode-block" id="serverConfiguration"><a class="viewcode-back" href="../introduction.html#config.serverConfiguration">[docs]</a><span class="k">class</span> <span class="nc">serverConfiguration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Sets up Conf with appropriate values</span>
+
+<span class="sd">    Creates an object that holds the configuration to the whole web server,</span>
+<span class="sd">    is available throughout the project. This separates the .ini style config</span>
+<span class="sd">    and the config.py script, that uses additional logic.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Init Conf values</span>
+
+<span class="sd">        Sets up all values in config.Conf.val[&#39;option&#39;]=value</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            N/A</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            N/A</span>
+
+<span class="sd">        Sets:</span>
+<span class="sd">            dict(self.val[option]): Set via read_config() method,</span>
+<span class="sd">            does some additional calculations and parsing.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_config</span><span class="p">(</span><span class="s1">&#39;plutonium&#39;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO: Config read success&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_uri&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">://</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_protocol&#39;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_name&#39;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_server_port&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: In reading config&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_connectors</span><span class="p">()</span>
+
+<div class="viewcode-block" id="serverConfiguration.influx_connectors"><a class="viewcode-back" href="../introduction.html#config.serverConfiguration.influx_connectors">[docs]</a>    <span class="k">def</span> <span class="nf">influx_connectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Set up client objects for InfluxDB</span>
+
+<span class="sd">        All DB connector objects in one place. Callable from other modules</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Sets:</span>
+<span class="sd">            ``self.influx_weather_client``,</span>
+<span class="sd">            ``self.influx_voltage_client``,</span>
+<span class="sd">            ``self.influx_iot_client``,</span>
+<span class="sd">            ``self.influx_status_client``: Influx client connector objects</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            N/A</span>
+<span class="sd">            </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_weather_client</span> <span class="o">=</span> <span class="n">influxdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">InfluxDBClient</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_host&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_user&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_pwd&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_weather_db&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_voltage_client</span> <span class="o">=</span> <span class="n">influxdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">InfluxDBClient</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_host&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_user&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_pwd&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_voltage_db&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_iot_client</span> <span class="o">=</span> <span class="n">influxdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">InfluxDBClient</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_host&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_user&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_pwd&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_IoT_db&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">influx_status_client</span> <span class="o">=</span> <span class="n">influxdb</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">InfluxDBClient</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_host&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_port&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_user&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_pwd&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;_influx_status_db&#39;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+            
+        
+<div class="viewcode-block" id="serverConfiguration.read_config"><a class="viewcode-back" href="../introduction.html#config.serverConfiguration.read_config">[docs]</a>    <span class="k">def</span> <span class="nf">read_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_filename</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reads configuration file</span>
+<span class="sd">    </span>
+<span class="sd">        Read and parse the configuration options into a dictionary</span>
+<span class="sd">        Why not using configparser? No idea, subject to change.</span>
+<span class="sd">        This method is called on class init. </span>
+<span class="sd">    </span>
+<span class="sd">        Args:</span>
+<span class="sd">            ``conf_filename``, *str()* file name without the .ini extension,</span>
+<span class="sd">            residing in ./config directory</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            *dict()*, On success</span>
+<span class="sd">            </span>
+<span class="sd">            *bool(False)*, On failure</span>
+
+<span class="sd">        Sets:</span>
+<span class="sd">            ``self.dict()`` of name_value_pairs read from the config file</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">read_path</span> <span class="o">=</span> <span class="n">SCRIPT_PATH</span> <span class="o">+</span> <span class="s1">&#39;/config/&#39;</span> <span class="o">+</span> <span class="n">conf_filename</span> <span class="o">+</span> <span class="s1">&#39;.ini&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">read_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conf_file</span><span class="p">:</span>
+                <span class="n">config_list</span> <span class="o">=</span> <span class="n">conf_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">config_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+                    <span class="n">option</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">exit</span><span class="p">(</span><span class="s2">&quot;WARNING: Wrong format of config option&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">option</span><span class="p">:</span><span class="n">value</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">val</span> </div></div>
+
+<span class="n">Conf</span> <span class="o">=</span> <span class="n">serverConfiguration</span><span class="p">()</span>
+
+<span class="c1">#_server_protocol = &quot;https&quot;</span>
+<span class="c1">#_server_name = &quot;bastart.spoton.cz&quot;</span>
+<span class="c1">#_server_uri = &quot;{}://{}&quot;.format(_server_protocol, _server_name)</span>
+<span class="c1">#_server_port = 443</span>
+<span class="c1">#_server_bind_ip = &#39;0.0.0.0&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#_influx_host = &#39;localhost&#39;</span>
+<span class="c1">#_influx_port = 8086</span>
+<span class="c1">#_influx_user = &#39;pi&#39;</span>
+<span class="c1">#_influx_pwd = &#39;Ventil6996&#39;</span>
+<span class="c1">#_influx_weather_db = &#39;weather_v2&#39;</span>
+<span class="c1">#_influx_status_db = &#39;status&#39;</span>
+<span class="c1">#_influx_voltage_db = &#39;voltage&#39;</span>
+<span class="c1">#_influx_IoT_db = &#39;weather_v2&#39;</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Milan &#39;Ventil&#39; Toman
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

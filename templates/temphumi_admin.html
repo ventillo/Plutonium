@@ -1,0 +1,65 @@
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col"></div>
+        <main class="pt-4 col-10">
+          <h1>Temperature / Humidity Dashboard</h1>
+          <h5>{timestamp} UTC</h5>
+
+            <h2>Tea cabinet</h2>
+            <div class="row text-left">
+                <div class="col"><p>Cabinet constructed for the sole purpose of aging (Sheng)
+                    Puerh tea. It is located on ground floor, 2.2m high, with natural
+                    airflow. This is a mere observation tool. The intention is to
+                    keep the aging natural, in European conditions.</p>
+                </div>
+            </div>
+          <section class="row text-center placeholders">
+            <div class="col placeholder">
+              <img src="{tea_temp_icon}" width="30" class="img-fluid" alt="Tea container temp">
+              <h3>{temp_value}</h3>
+              <div class="text-muted">[&deg;C]</div>
+            </div>
+            <div class="col placeholder">
+              <img src="{tea_bat_icon}" width="30" class="img-fluid" alt="Tea container temp">
+              <h3>{bat_value}</h3>
+              <div class="text-muted">[V]</div>
+            </div>
+            <div class="col placeholder">
+              <img src="{tea_hum_icon}" width="30" class="img-fluid" alt="Tea container humidity">
+              <h3>{hum_value}</h3>
+              <div class="text-muted">[%]</div>
+            </div>
+          </section>
+          <section class="row text-center placeholders">
+            <div class="col">
+              <div id="tea_labels"></div>
+              <div id="tea_temphum" class="container-fluid" style="width:100%;height:200px;"></div>
+              <button type="button" class="btn btn-secondary" onclick="setBack('usense_temphumi_monitor')">&lt;&lt;</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('6','usense_temphumi_monitor')">6h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('12','usense_temphumi_monitor')">12h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('24','usense_temphumi_monitor')">24h</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('168','usense_temphumi_monitor')">Week</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('720','usense_temphumi_monitor')">Month</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('4320','usense_temphumi_monitor')">6Mo</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="setHours('8640','usense_temphumi_monitor')">Year</button>
+              <button type="button" class="btn btn-secondary" onclick="setForth('usense_temphumi_monitor')">&gt;&gt;</button>
+            </div>
+            <div id="xxx"></div>
+          </section>
+          <section class="row">
+          </section>
+        </main>
+        <div class="col"></div>
+      </div>
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10bugfix.js"></script>
+    <script type="text/javascript" src="../static/js/temphum_graph.js"></script>
